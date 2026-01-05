@@ -30,5 +30,12 @@ void ChatServer::start() {
         cout << "Error listening socket" <<errno<< endl;
         exit(errno);
     }
+    auto addrlen = sizeof(sockaddr);
+    int connection = accept(ChatServer::Serversocket,(struct sockaddr*)&server_address,(socklen_t*)&addrlen);
+    if (connection < 0) {
+        cout << "Error accepting connection" <<errno<< endl;
+        exit(errno);
+    }
+    cout<<"connected"<<connection<<endl;
 
 }
