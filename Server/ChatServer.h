@@ -7,10 +7,12 @@
 
 #include <map>
 #include <mutex>
+#include <memory>
 #include "../Common/Protocol.h"
 #include "../Common/Message.h"
 #include "ClientHandler.h"
 #include "MessageLogger.h"
+#include "UserManager.h"
 
 using namespace std;
 class ChatServer {
@@ -19,21 +21,20 @@ private:
     string IPA;
     int Serversocket;
     sockaddr_in server_address;
-    map<string,ClientHandler*> activeClients;
-    mutex clientMutex;
+    UserManager manager;
     MessageLogger logger;
     int setupSocket();
-    void acceptConnection();
+    int acceptConnection(int clientSocket);
 
 public:
-    ChatServer(MessageLogger log,uint16_t p = Protocol::DEFAULT_PORT):port(p),logger(log){};
+    ChatServer(MessageLogger log,uint16_t p = Protocol::DEFAULT_PORT):manager(),port(p),logger(log){};
     void start();
     void stop();
     void broadCastMsg(const Message& msg);
     void sendPrivate(const Message& msg);
     void registerClient(string name);
     void unregisterClient(string name);
-    void printServerInfo(int serverSocket);
+    void printServerInfo();
 
 };
 

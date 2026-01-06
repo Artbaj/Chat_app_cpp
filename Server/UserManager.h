@@ -11,17 +11,17 @@
 #include <mutex>
 #include <vector>
 #include "../Common/Message.h"
-
+#include <memory>
 // Forward declaration
 class ClientHandler;
 
 class UserManager {
 public:
-    UserManager();
+    UserManager(){};
 
 
 
-    bool addUser(const std::string& name, ClientHandler* handler);
+    void addUser(const std::string& name,unique_ptr<ClientHandler> handler);
 
 
     void removeUser(const std::string& name);
@@ -37,9 +37,7 @@ public:
 
 private:
 
-    std::map<std::string, ClientHandler*> users;
-
-
+    map<string,unique_ptr<ClientHandler>> activeClients;
     std::mutex usersMutex;
 };
 

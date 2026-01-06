@@ -32,7 +32,7 @@ int ChatServer::setupSocket() {
 
 void ChatServer::start() {
     if(ChatServer::setupSocket()) exit(WSAGetLastError());
-    printServerInfo(ChatServer::Serversocket);
+    printServerInfo();
     if (listen(ChatServer::Serversocket, Protocol::DEFAULT_QUEUE_SIZE) < 0) {
         cout << "Error listening socket" <<WSAGetLastError()<< endl;
         exit(errno);
@@ -42,18 +42,13 @@ void ChatServer::start() {
     sockaddr_in client_address = {};
     auto addrlen = sizeof(sockaddr_in);
     while(true){
-        int connection = accept(ChatServer::Serversocket,(struct sockaddr*)&client_address,(socklen_t*)&addrlen);
-        if (connection < 0) {
+        int clientSocket = accept(ChatServer::Serversocket,(struct sockaddr*)&client_address,(socklen_t*)&addrlen);
+        if (clientSocket < 0) {
             cout << "Error accepting connection" <<errno<< endl;
             exit(errno);
         }
-        cout<<"connected "<<connection<<endl;
-        char* msg= nullptr;
 
-        recv(connection,msg,Protocol::MAX_NAME_LEN,0);
-
-
-        cout<<msg;
+       if(acceptConnection(clientSocket)) cout<<"imie zajete";
 
     }
 
@@ -61,7 +56,7 @@ void ChatServer::start() {
 
 }
 
-void ChatServer::printServerInfo(int serverSocket) {
+void ChatServer::printServerInfo() {
     char hostname[256];
     if (gethostname(hostname, sizeof(hostname)) == 0) {
         struct addrinfo hints = {}, *res;
@@ -78,6 +73,21 @@ void ChatServer::printServerInfo(int serverSocket) {
             freeaddrinfo(res);
         }
     }
+}
+
+int ChatServer::acceptConnection(int clientSocket) {
+    char msg[5];
+    memset(msg,0,5);
+    if(recv(clientSocket,msg,4,0)<0){
+        cout<<WSAGetLastError();
+    }
+    if(!manager.isUsernameTaken(msg)) {
+
+        manager.addUser(msg,make_unique<ClientHandler>(clientSocket, msg));
+        return 0;
+    }
+    else return 1;
+
 }
 
 int main(){

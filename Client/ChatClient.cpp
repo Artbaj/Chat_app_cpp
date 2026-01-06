@@ -38,9 +38,16 @@ void ChatClient::setupConnection(uint16_t server_port) {
 
    cout<<connect(clientSocket, (struct sockaddr*)&server_address, sizeof(server_address));
     int msglen = sizeof(ChatClient::name);
-    if(send(clientSocket,name.c_str(),Protocol::MAX_NAME_LEN,0)<0){
-        cout<<"blad w wysylaniu";
+    char in='a';
+
+    while(in!='0'){
+        if(send(clientSocket,name.c_str(),4,0)<0){
+            cout<<"blad w wysylaniu";
+        }
+        cin>>in;
     }
+
+
 }
 
 

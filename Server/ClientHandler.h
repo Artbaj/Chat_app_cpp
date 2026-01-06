@@ -8,6 +8,7 @@
 #include <string>
 #include <atomic>
 #include <vector>
+#include <iostream>
 #include "../Common/Message.h"
 
 using namespace std;
@@ -31,7 +32,7 @@ public:
 private:
     int clientSocket;
     string clientName;
-    atomic<bool> connected;
+
 
 
     void run();
