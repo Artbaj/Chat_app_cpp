@@ -14,18 +14,21 @@ enum class MessageType {
 
 };
 
-class Message {
-public:
+struct Message {
     MessageType type;
     string sender,recipient,content;
+    int size;
 
-
-
-    Message(string s,string r,string c,MessageType t = MessageType::GROUP): type(t),sender(s),recipient(r),content(c){}
-
+    Message(string sender,string content):sender(sender),content(content),type(MessageType::GROUP){};
+    Message(string s,string r,string c): sender(s),recipient(r),content(c),type(MessageType::PRIVATE){}
+    Message(string msg);
     string getSender();
     string getRecipient();
     string getContent();
+    string toString();
+    MessageType getType();
+    int getSize();
+
 };
 
 

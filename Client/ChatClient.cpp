@@ -16,7 +16,7 @@
 void ChatClient::start() {
   cout<<"daj adres";
   cin>>ChatClient::IPA;
-    setupConnection();
+    showMenu();
 }
 
 void ChatClient::setupConnection(uint16_t server_port) {
@@ -37,18 +37,95 @@ void ChatClient::setupConnection(uint16_t server_port) {
 
 
    cout<<connect(clientSocket, (struct sockaddr*)&server_address, sizeof(server_address));
-    int msglen = sizeof(ChatClient::name);
-    char in='a';
-
-    while(in!='0'){
-        if(send(clientSocket,name.c_str(),4,0)<0){
-            cout<<"blad w wysylaniu";
-        }
-        cin>>in;
+    if(send(clientSocket,name.c_str(),4,0)<0){
+        cout<<"blad w wysylaniu";
     }
 
 
+
+
 }
+
+void ChatClient::showMenu() {
+
+    int choice;
+    bool exitRequested = false;
+
+    while (!exitRequested) {
+        cout << "\n================================" << endl;
+        cout << "   CLIENT: " << name << " (Port: " << port << ")" << endl;
+        cout << "================================" << endl;
+        cout << "1. Polacz z serwerem" << endl;
+        cout << "2. Napisz wiadomosc (Interaktywnie)" << endl;
+        cout << "3. Wyslij szybki test (Ping)" << endl;
+        cout << "4. Zakoncz" << endl;
+        cout << "--------------------------------" << endl;
+        cout << "Wybor: ";
+
+        if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            continue;
+        }
+
+        switch (choice) {
+            case 1:
+                // Możesz tu dodać pytanie o port serwera, jeśli nie domyślny
+                setupConnection();
+                break;
+            case 2:
+                writeMessage(); // Twoja metoda do pobierania tekstu i wysyłki
+                break;
+            case 3: {
+                //Message msg();
+                //sendMessage(msg);
+                cout << "[!] Testowa wiadomosc wyslana." << endl;
+                break;
+            }
+            case 4:
+                exitRequested = true;
+                cout << "[!] Zamykanie klienta..." << endl;
+                break;
+            default:
+                cout << "[X] Niepoprawna opcja!" << endl;
+        }
+    }
+}
+void ChatClient::writeMessage() {
+    string recipient,content;
+
+    cout<<"podaj odbiorce wpisz 0 jesli broadcast"<<endl;
+    cin>>recipient;
+    cout<<"podaj content";
+    cin>>content;
+    if(recipient=="0") {
+        Message msg = Message(ChatClient::name,content);
+        sendMessage(msg);
+    }
+    else{
+        Message msg = Message(ChatClient::name,recipient,content);
+        sendMessage(msg);
+    }
+
+
+
+}
+
+void ChatClient::sendMessage(Message msg) {
+    string sendContent = msg.toString();
+    int size = msg.getSize();
+
+    if(send(clientSocket,reinterpret_cast<char*>(&size),sizeof(int),0)<0){
+       // cout<<"blad w wysylaniu rozmiaru wiadomosci";
+    }
+    if(send(clientSocket,sendContent.c_str(),size,0)<0){
+        cout<<"blad w wysylaniu wiadomosci";
+    }
+    cout<<sendContent<<" "<<size<<" "<<reinterpret_cast<char*>(&size)<<endl;
+
+}
+
+
 
 
 int main(){

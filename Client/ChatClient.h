@@ -9,7 +9,9 @@
 #import "../Common/Protocol.h"
 #import "../Common/Message.h"
 #import "ServerListener.h"
+
 class ServerListener;
+
 using namespace std;
 class ChatClient {
     uint16_t port;
@@ -22,8 +24,9 @@ public:
     ChatClient(string name,uint16_t port): name(name), port(port) {};
     void start();
     void setupConnection(uint16_t server_port = Protocol::DEFAULT_PORT);
+    void showMenu();
     void writeMessage();
-    void sendMessage(Message& msg);
+    void sendMessage(Message msg);
     void recieveMessage(Message& msg);
 
 

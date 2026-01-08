@@ -3,6 +3,8 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <thread>
+
 #pragma comment(lib, "ws2_32.lib") // Linkowanie biblioteki w MSVC
 #else
 #include <sys/socket.h>
@@ -43,6 +45,7 @@ void ChatServer::start() {
     auto addrlen = sizeof(sockaddr_in);
     while(true){
         int clientSocket = accept(ChatServer::Serversocket,(struct sockaddr*)&client_address,(socklen_t*)&addrlen);
+
         if (clientSocket < 0) {
             cout << "Error accepting connection" <<errno<< endl;
             exit(errno);
@@ -82,11 +85,21 @@ int ChatServer::acceptConnection(int clientSocket) {
         cout<<WSAGetLastError();
     }
     if(!manager.isUsernameTaken(msg)) {
+        manager.addUser(msg,make_unique<ClientHandler>(clientSocket, msg,this));
 
-        manager.addUser(msg,make_unique<ClientHandler>(clientSocket, msg));
         return 0;
     }
     else return 1;
+
+}
+
+void ChatServer::sendPrivate(const Message &msg) {
+    thread sender([this,msg]() {
+        ClientHandler* recipient = manager.getHandler(msg.recipient);
+        recipient->sendMessage(msg);
+    });
+    sender.join();
+
 
 }
 

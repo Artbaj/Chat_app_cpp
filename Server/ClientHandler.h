@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include "../Common/Message.h"
+#include <semaphore>
 
 using namespace std;
 class ChatServer;
@@ -17,7 +18,7 @@ class ChatServer;
 class ClientHandler {
 public:
 
-    ClientHandler(int socket,string cName):clientSocket(socket),clientName(cName){};
+    ClientHandler(int socket,string cName,ChatServer *server): clientSocket(socket), clientName(cName), msg_semaphore(1), server(server){};
 
 
 
@@ -30,15 +31,16 @@ public:
     string getClientName() const { return clientName; }
 
 private:
+    ChatServer* server;
     int clientSocket;
     string clientName;
-
-
+    binary_semaphore msg_semaphore;
+    vector<Message> msgs;
+    atomic<bool> is_active;
 
     void run();
 
 
-    void handleIncomingMessage(const Message& msg);
 };
 
 
