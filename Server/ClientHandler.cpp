@@ -63,6 +63,7 @@ void ClientHandler::handleIncomingMessage(vector<Message>& msgs,atomic<bool>& is
                 cout<<i<<" "<<msg.content<<endl;
 
                 if(msg.type==MessageType::PRIVATE) server->sendPrivate(msg);
+                else if(msg.type==MessageType::GROUP) server->broadCastMsg(msg);
                 msgs.pop_back();
             }
             ready=false;
@@ -83,6 +84,7 @@ void ClientHandler::start() {
 }
 
 void ClientHandler::sendMessage(Message msg) {
+
     cout<<endl<<endl<<endl;
     cout<<msg.toString()<<endl;
     cout<<endl<<endl<<endl;
@@ -92,7 +94,7 @@ void ClientHandler::sendMessage(Message msg) {
     int size = msg.getSize();
     vector<char> buff(1);
     buff[0] = size;
-
+    logger->Log(msg);
 
     send(clientSocket,buff.data(),sizeof(int),0);
 

@@ -24,13 +24,13 @@ private:
     int Serversocket;
     sockaddr_in server_address;
     UserManager manager;
-    MessageLogger logger;
+    MessageLogger* logger;
     int setupSocket();
     int acceptConnection(int clientSocket);
     list<thread> workers;
 
 public:
-    ChatServer(MessageLogger log,uint16_t p = Protocol::DEFAULT_PORT):manager(),port(p),logger(log){};
+    ChatServer(MessageLogger* log,uint16_t p = Protocol::DEFAULT_PORT):manager(),port(p),logger(log){};
     void start();
     void stop();
     void broadCastMsg( Message& msg);

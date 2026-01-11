@@ -11,6 +11,7 @@
 #include <thread>
 #include <iostream>
 #include "../Common/Message.h"
+#include "MessageLogger.h"
 #include <semaphore>
 #include <condition_variable>
 using namespace std;
@@ -19,7 +20,7 @@ class ChatServer;
 class ClientHandler {
 public:
 
-    ClientHandler(int socket,string cName,ChatServer *server): clientSocket(socket), clientName(cName), msg_semaphore(1), server(server){};
+    ClientHandler(int socket,string cName,ChatServer *server,MessageLogger* logger): clientSocket(socket), clientName(cName), msg_semaphore(1), server(server),logger(logger){};
 
     ~ClientHandler();
 
@@ -44,7 +45,7 @@ private:
     atomic<bool> ready{false};
     thread readingThread,parsingThread;
     void run();
-
+    MessageLogger* logger;
 
     void handleIncomingMessage(vector<Message> &msgs, atomic<bool> &is_active, binary_semaphore &msg_semaphore,
                                ChatServer *server, atomic<bool> &ready);

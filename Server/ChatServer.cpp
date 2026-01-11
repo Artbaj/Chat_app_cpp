@@ -79,18 +79,32 @@ void ChatServer::printServerInfo() {
 }
 
 int ChatServer::acceptConnection(int clientSocket) {
-    char msg[5];
 
 
-    memset(msg,0,4);
-    if(recv(clientSocket,msg,4,0)<0){
+    int size;
+
+    vector<char> buff(1);
+    size = recv(clientSocket,buff.data(),sizeof(int),0);
+
+    if(size<0){
         cout<<WSAGetLastError();
     }
-    for(auto c :msg)cout<<c;
-    msg[5] = '\0';
-    if(!manager.isUsernameTaken(msg)) {
+    size = buff[0];
+    buff.clear();
+    buff.resize(size);
 
-        workers.emplace_back(&ChatServer::registerClient,this,clientSocket,msg);
+
+    if(recv(clientSocket,buff.data(),size,0)<0){
+        cout<<WSAGetLastError();
+    }
+
+    string name(buff.begin(), buff.end());
+    cout<<name;
+
+
+    if(!manager.isUsernameTaken(name)) {
+
+        workers.emplace_back(&ChatServer::registerClient,this,clientSocket,name);
 
 
         return 0;
@@ -101,10 +115,17 @@ int ChatServer::acceptConnection(int clientSocket) {
 
 void ChatServer::sendPrivate(Message msg) {
     thread sender([this,msg]() {
-        cout<<msg.recipient;
-        ClientHandler* recipient = manager.getHandler(msg.recipient);
 
-        recipient->sendMessage(msg);
+        ClientHandler* recipient = manager.getHandler(msg.recipient);
+        if(recipient!= nullptr){
+            recipient->sendMessage(msg);
+        }
+        else {
+            Message error("Nie ma takiego uzytkownika",1);
+            recipient = manager.getHandler(msg.sender);
+            recipient->sendMessage(error);
+        }
+
     });
     sender.join();
 
@@ -113,13 +134,19 @@ void ChatServer::sendPrivate(Message msg) {
 
 void ChatServer::registerClient(int clientSocket,string name) {
 
-    auto* handler = new ClientHandler(clientSocket,name,this);
+    auto* handler = new ClientHandler(clientSocket,name,this,logger);
     manager.addUser(name,handler);
 }
 
 void ChatServer::stop() {
     for(auto& t:workers){
         if(t.joinable()) t.join();
+    }
+}
+
+void ChatServer::broadCastMsg(Message &msg) {
+    for(auto& handler:manager.getAllHandlers()){
+        handler->sendMessage(msg);
     }
 }
 
@@ -130,8 +157,8 @@ int main(){
         std::cerr << "WSAStartup failed: " << result << std::endl;
         return 1;
     }
-    MessageLogger logger = MessageLogger("./");
-    ChatServer server = ChatServer(logger);
+    MessageLogger logger("./logi.txt");
+    ChatServer server = ChatServer(&logger);
     server.start();
     WSACleanup();
 }

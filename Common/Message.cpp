@@ -47,10 +47,14 @@ Message::Message(string msg) {
         content = wyniki[3];
 
     }
-    else{
+    else if(msg[0]=='B'){
         type = MessageType::GROUP;
         sender = wyniki[1];
         content = wyniki[2];
+    }
+    else{
+        type = MessageType::SYSTEM;
+        content=wyniki[1];
     }
 
 }
@@ -64,11 +68,17 @@ string Message::toString() {
 
     }
     else if(type==MessageType::GROUP) out+='B';
+    else if(type==MessageType::SYSTEM){
+        out+='C';
+        out+=content;
+        return out;
+    }
     out+='|';
     out+=sender;
     out+="|";
     out+=content;
     size = out.length();
+    converted=out;
     return out;
 }
 
@@ -79,7 +89,8 @@ void Message::print() {
              cout<<"PRIVATE from:"<<sender<<endl;
 
         }
-        else cout<<"BROADCAST"<<endl;
+        else if(type==MessageType::GROUP) cout<<"BROADCAST"<<endl;
+        else cout<<"SYSTEM"<<endl;
         cout<<content<<endl;
     }
 };

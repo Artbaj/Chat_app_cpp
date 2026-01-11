@@ -18,8 +18,7 @@ void ChatClient::start() {
   cin>>ChatClient::IPA;
   cout<<"daj imie";
   cin>>ChatClient::name;
-  cout<<"daj port";
-  cin>>ChatClient::port;
+
   msgs.reserve(Protocol::DEFAULT_MSG_QUEUE_SIZE);
 
   showMenu();
@@ -44,9 +43,13 @@ void ChatClient::setupConnection(uint16_t server_port) {
 
 
    cout<<connect(clientSocket, (struct sockaddr*)&server_address, sizeof(server_address));
-    if(send(clientSocket,name.c_str(),4,0)<0){
-        cout<<"blad w wysylaniu";
-    }
+   int size = ChatClient::name.size();
+   char buff[1];
+   buff[0]=size;
+   cout<<size;
+    send(clientSocket,buff,1,0);
+    send(clientSocket,name.c_str(),size,0);
+
     isActive=true;
 
 
@@ -153,7 +156,7 @@ void ChatClient::recieveMessage(int socket,atomic<bool>& ready,vector<Message>&s
         buff.clear();
         buff.resize(size);
 
-        cout<<"recivingmsg"<<endl;
+
         if(recv(socket,buff.data(),size,0)<0){
             cout<<WSAGetLastError();
         }

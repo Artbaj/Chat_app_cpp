@@ -26,6 +26,15 @@ ClientHandler *UserManager::getHandler(const string &name) {
 
         return it->second;
     }
+
     return nullptr;
 
+}
+
+std::vector<ClientHandler *> UserManager::getAllHandlers() {
+    vector<ClientHandler*> out;
+    for(auto& [name,clientHandler]:activeClients){
+        out.push_back(clientHandler);
+    }
+    return out;
 }
