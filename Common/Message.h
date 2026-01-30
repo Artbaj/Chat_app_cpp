@@ -17,7 +17,7 @@ enum class MessageType {
 struct Message {
     MessageType type;
     string sender,recipient,content,converted;
-    int size;
+    uint8_t size;
     Protocol::Status status;
     Message(string content,int id):content(content),type(MessageType::SYSTEM){};
     Message(string sender,string content):sender(sender),content(content),type(MessageType::GROUP){};
@@ -29,7 +29,7 @@ struct Message {
     string toString();
     void print();
     MessageType getType();
-    int getSize();
+   uint8_t getSize();
 
 };
 

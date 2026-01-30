@@ -31,6 +31,9 @@ private:
 
 public:
     ChatServer(MessageLogger* log,uint16_t p = Protocol::DEFAULT_PORT):manager(),port(p),logger(log){};
+    ~ChatServer() {
+        cout<<"stopping";
+        stop();}
     void start();
     void stop();
     void broadCastMsg( Message& msg);

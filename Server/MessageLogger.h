@@ -24,7 +24,7 @@ public:
     MessageLogger(const string &p) : path(p) {
         plik.open(path,std::ios::out | std::ios::app);
     }
-    void Log(Message msg);
+    void Log(Message& msg);
 };
 
 

@@ -21,10 +21,10 @@
 using namespace std;
 void ClientHandler::handlerLoop(const int& socket,binary_semaphore& msg_semaphore,vector<Message>& msgs,atomic<bool>& is_active,atomic<bool> &ready){
     while(is_active&&msgs.size()<Protocol::DEFAULT_MSG_QUEUE_SIZE){
-        int size;
+        uint8_t size;
 
         vector<char> buff(1);
-        size = recv(socket,buff.data(),sizeof(int),0);
+        size = recv(socket,buff.data(),sizeof(uint8_t ),0);
 
         if(size<0){
             cout<<WSAGetLastError();
@@ -56,19 +56,23 @@ void ClientHandler::handleIncomingMessage(vector<Message>& msgs,atomic<bool>& is
 
         if(ready==true){
 
-            msg_semaphore.acquire();
-            cout<<"aquired"<<endl;
+
+
             for(int i=msgs.size()-1;i>=0;i--){
+                msg_semaphore.acquire();
                Message msg = msgs[i];
-                cout<<i<<" "<<msg.content<<endl;
+
+                string out = msg.toString();
+                logger->Log(msg);
                 if(msg.content=="disconnect") server->unregisterClient(msg.sender);
                 if(msg.type==MessageType::PRIVATE) server->sendPrivate(msg);
                 else if(msg.type==MessageType::GROUP) server->broadCastMsg(msg);
                 msgs.pop_back();
+                msg_semaphore.release();
             }
             ready=false;
-            msg_semaphore.release();
-            cout<<"released"<<endl;
+
+
         }
 
     }
@@ -85,18 +89,16 @@ void ClientHandler::start() {
 
 void ClientHandler::sendMessage(Message msg) {
 
-    cout<<endl<<endl<<endl;
-    cout<<msg.toString()<<endl;
-    cout<<endl<<endl<<endl;
+
     string sendContent = msg.toString();
     int scket =getClientSocket();
     string nme = getClientName();
-    int size = msg.getSize();
+    uint8_t size = msg.getSize();
     vector<char> buff(1);
     buff[0] = size;
-    logger->Log(msg);
 
-    send(clientSocket,buff.data(),sizeof(int),0);
+
+    send(clientSocket,buff.data(),sizeof(uint8_t),0);
 
     send(clientSocket,sendContent.c_str(),size,0);
 

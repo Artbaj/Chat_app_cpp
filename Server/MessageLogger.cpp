@@ -5,16 +5,20 @@
 #include "MessageLogger.h"
 
 
-void MessageLogger::Log(Message msg) {
-    loggers.emplace_back([this, msg]() {
-        logmtx.lock();
+void MessageLogger::Log(Message& msg) {
+
+    std::thread worker([this, msg]() {
+        std::lock_guard<std::mutex> lock(logmtx);
 
         if(plik.is_open()){
 
             plik<<msg.converted<<endl;
         }
-        logmtx.unlock();
-
+        return;
     });
+
+// WAŻNE: Musisz zdecydować co zrobić z wątkiem
+    worker.detach();
+
 
 }

@@ -81,10 +81,10 @@ void ChatServer::printServerInfo() {
 int ChatServer::acceptConnection(int clientSocket) {
 
 
-    int size;
+    uint8_t size;
 
     vector<char> buff(1);
-    size = recv(clientSocket,buff.data(),sizeof(int),0);
+    size = recv(clientSocket,buff.data(),sizeof(uint8_t ),0);
 
     if(size<0){
         cout<<WSAGetLastError();
@@ -99,7 +99,7 @@ int ChatServer::acceptConnection(int clientSocket) {
     }
 
     string name(buff.begin(), buff.end());
-    cout<<name;
+    cout<<"connected:"<<name<<endl;
 
 
     if(!manager.isUsernameTaken(name)) {
@@ -118,6 +118,7 @@ void ChatServer::sendPrivate(Message msg) {
 
         ClientHandler* recipient = manager.getHandler(msg.recipient);
         if(recipient!= nullptr){
+
             recipient->sendMessage(msg);
         }
         else {
@@ -134,11 +135,12 @@ void ChatServer::sendPrivate(Message msg) {
 
 void ChatServer::registerClient(int clientSocket,string name) {
 
-    auto* handler = new ClientHandler(clientSocket,name,this,logger);
+    auto* handler = new ClientHandler(clientSocket,name,this,this->logger);
     manager.addUser(name,handler);
 }
 
 void ChatServer::stop() {
+    cout<<"stopping";
     for(auto& handler:manager.getAllHandlers()){
         manager.removeUser(handler->getClientName());
     }
@@ -148,6 +150,9 @@ void ChatServer::stop() {
 }
 
 void ChatServer::broadCastMsg(Message &msg) {
+
+
+    cout<<msg.converted;
     for(auto& handler:manager.getAllHandlers()){
         handler->sendMessage(msg);
     }

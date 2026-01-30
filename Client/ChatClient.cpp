@@ -86,14 +86,19 @@ void ChatClient::showMenu() {
                 serverListener = thread(&ChatClient::recieveMessage,this,clientSocket,ref(ready),ref(msgs));
                 break;
             case 2:
-                writeMessage();
+                if(isActive) writeMessage();
+                else cout<<"polacz sie z serwerem";
                 break;
             case 3:
-                disconnect();
+                if(isActive) disconnect();
+                else cout<<"polacz sie z serwerem";
+
                 break;
 
             case 4:
-                readMessages();
+                if(isActive)  readMessages();
+                else cout<<"polacz sie z serwerem";
+
                 break;
             case 5:
                 exitRequested = true;
@@ -127,10 +132,10 @@ void ChatClient::writeMessage() {
 
 void ChatClient::sendMessage(Message msg) {
     string sendContent = msg.toString();
-    int size = msg.getSize();
+    uint8_t size = msg.getSize();
     vector<char> buff(1);
     buff[0] = size;
-    if(send(clientSocket,buff.data(),sizeof(int),0)<0){
+    if(send(clientSocket,buff.data(),sizeof(uint8_t),0)<0){
        // cout<<"blad w wysylaniu rozmiaru wiadomosci";
     }
     if(send(clientSocket,sendContent.c_str(),size,0)<0){
@@ -143,11 +148,11 @@ void ChatClient::sendMessage(Message msg) {
 void ChatClient::recieveMessage(int socket,atomic<bool>& ready,vector<Message>&smgs) {
     while(isActive&&msgs.size()<Protocol::DEFAULT_MSG_QUEUE_SIZE){
 
-        int size;
+        uint8_t size;
 
         vector<char> buff(1);
 
-        size = recv(socket,buff.data(),sizeof(int),0);
+        size = recv(socket,buff.data(),sizeof(uint8_t),0);
 
         if(size<0){
             cout<<WSAGetLastError();
@@ -204,7 +209,7 @@ void ChatClient::readMessages() {
 void ChatClient::disconnect() {
     Message msg("disconnect",1);
     sendMessage(msg);
-    cout<<"disconnected";
+    isActive = false;
     if(serverListener.joinable()) serverListener.join();
 }
 

@@ -22,8 +22,8 @@ MessageType Message::getType() {
     return type;
 }
 
-int Message::getSize() {
-    cout<<"MSG gerting size"<<size<<endl;
+uint8_t Message::getSize() {
+
     return size;
 }
 
@@ -70,7 +70,10 @@ string Message::toString() {
     else if(type==MessageType::GROUP) out+='B';
     else if(type==MessageType::SYSTEM){
         out+='C';
+        out+='|';
         out+=content;
+
+        size = out.length();
         return out;
     }
     out+='|';
@@ -89,7 +92,7 @@ void Message::print() {
              cout<<"PRIVATE from:"<<sender<<endl;
 
         }
-        else if(type==MessageType::GROUP) cout<<"BROADCAST"<<endl;
+        else if(type==MessageType::GROUP) cout<<"BROADCAST from:"<<sender<<endl;
         else cout<<"SYSTEM"<<endl;
         cout<<content<<endl;
     }
