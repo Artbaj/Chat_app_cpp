@@ -1,0 +1,50 @@
+@echo off
+setlocal enabledelayedexpansion
+cd /d "%~dp0"
+
+:: --- KONFIGURACJA ---
+set "EXE=ChatClient.exe"
+set "IP=10.100.7.46"
+set "NUM_BOTS=20"
+set "MSGS_PER_BOT=10"
+:: --------------------
+
+echo [!] ROZPOCZYNAM GENEROWANIE ARMII (%NUM_BOTS% botow)...
+
+:: Czyścimy stare pliki stress_*.txt
+del stress_*.txt >nul 2>&1
+
+for /L %%i in (1,1,%NUM_BOTS%) do (
+    set "FILE=stress_%%i.txt"
+    set "NAME=StressBot_%%i_!RANDOM!"
+    
+    :: 1. IP i Imię
+    (echo %IP%) > !FILE!
+    (echo !NAME!) >> !FILE!
+    
+    :: 2. Połącz z serwerem
+    (echo 1) >> !FILE!
+    
+    :: 3. Pętla wysyłania wiadomości
+    for /L %%j in (1,1,%MSGS_PER_BOT%) do (
+        (echo 2) >> !FILE!
+        (echo 0) >> !FILE!
+        (echo Wiadomosc nr %%j od bota %%i - ATTAK STRESS TESTU!) >> !FILE!
+    )
+    
+    :: 4. Czytaj na koniec i zostaw bota w menu
+    (echo 4) >> !FILE!
+
+    echo [+] Przygotowano: !NAME!
+)
+
+echo.
+echo [!] ATTAK! Odpalam okna...
+for /L %%i in (1,1,%NUM_BOTS%) do (
+    start "Bot %%i" cmd /c "%EXE% < stress_%%i.txt & pause"
+    :: Mały delay, żeby system nie zamulił przy otwieraniu 20 okien naraz
+    timeout /t 1 /nobreak >nul
+)
+
+echo [OK] Wszystkie boty wyslaly dane. Sprawdz obciazenie serwera.
+pause
