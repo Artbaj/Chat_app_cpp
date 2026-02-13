@@ -76,7 +76,10 @@ void ClientHandler::handleIncomingMessage(vector<Message>& msgs,atomic<bool>& is
 
 
         }
-
+        else {
+            int sleepTime = 20 + (rand() % 30);
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+        }
     }
     return;
 }

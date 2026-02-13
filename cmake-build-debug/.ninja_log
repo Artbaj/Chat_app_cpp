@@ -27,3 +27,16 @@
 3056	3553	7915601727602121	ChatClient.exe	d72a15ac44a02692
 6	3311	7915602963594304	CMakeFiles/ChatClient.dir/Client/ChatClient.cpp.obj	a7436dcba3f9b971
 3312	3697	7915602967105954	ChatClient.exe	d72a15ac44a02692
+79	20736	7915696284447767	CMakeFiles/ChatClient.dir/Client/ChatClient.cpp.obj	a7436dcba3f9b971
+7	638	7915697432499357	ChatClient.exe	d72a15ac44a02692
+6	3171	7915702621430285	CMakeFiles/ChatServer.dir/Server/ChatServer.cpp.obj	f1c1e990595f80c1
+3172	3542	7915702625120331	ChatServer.exe	9507b731cdabc034
+12	1144	7915711262906131	CMakeFiles/ChatServer.dir/Server/UserManager.cpp.obj	321e6d3320ede908
+5	2394	7915711275381256	CMakeFiles/ChatServer.dir/Server/ChatServer.cpp.obj	f1c1e990595f80c1
+2394	2648	7915711277902804	ChatServer.exe	9507b731cdabc034
+5	2498	7915715682129125	CMakeFiles/ChatServer.dir/Server/ClientHandler.cpp.obj	d878ebbea45caca0
+2498	3030	7915715687426385	ChatServer.exe	9507b731cdabc034
+4	2825	7915718820945251	CMakeFiles/ChatServer.dir/Server/ClientHandler.cpp.obj	d878ebbea45caca0
+2825	3097	7915718823635585	ChatServer.exe	9507b731cdabc034
+6	3039	7917601472435128	CMakeFiles/ChatClient.dir/Client/ChatClient.cpp.obj	a7436dcba3f9b971
+3040	3482	7917601476834505	ChatClient.exe	d72a15ac44a02692

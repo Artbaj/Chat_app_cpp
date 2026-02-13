@@ -9,8 +9,9 @@ using namespace std;
 void UserManager::addUser(const string &name, ClientHandler* handler) {
     usersMutex.lock();
     activeClients[name] =handler;
-    usersMutex.unlock();
     activeClients[name]->start();
+    usersMutex.unlock();
+
 
 }
 

@@ -247,9 +247,9 @@ void ChatClient::startSpamming() {
 
     while (isActive) {
         // Losujemy treść
-        string randomText = texts[rand() % texts.size()] + " [" + to_string(counter++) + "]";
+        string randomText = texts[rand() % texts.size()];
 
-        // Tworzymy wiadomość (broadcast do wszystkich = "0")
+
         Message msg(name, "0", randomText);
         sendMessage(msg);
 

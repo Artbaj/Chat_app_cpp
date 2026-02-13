@@ -8,7 +8,7 @@
 #pragma comment(lib, "ws2_32.lib") // Linkowanie biblioteki w MSVC
 #else
 #include <sys/socket.h>
-#include <netinet/in.hg>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #endif
